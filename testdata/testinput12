@@ -751,6 +751,15 @@
     s\x{212a}s
     K\x{17f}K
 
+# Regional Indicators with PCRE2_MATCH_INVALID_UTF, including a long run, which
+# must not take quadratic time.
+
+/\x{1f1e6}\K(\X)(\X)/utf,match_invalid_utf
+    \x{1f1e6}\x{1f1e7}\x{1f1e8}\x{1f1e9}\x{1f1ea}
+
+/^(?=\X{50000}$)/utf,match_invalid_utf
+    \[\x{1f1e6}]{100000}
+
 # --------------------------------------------------------- 
 
 # End of testinput12

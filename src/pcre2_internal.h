@@ -2261,6 +2261,7 @@ private structures. */
 #define dfa_match_block PCRE2_SUFFIX(dfa_match_block_)
 #define match_block     PCRE2_SUFFIX(match_block_)
 #define named_group     PCRE2_SUFFIX(named_group_)
+#define ri_scan_cache   PCRE2_SUFFIX(ri_scan_cache_)
 
 #include "pcre2_intmodedep.h"
 
@@ -2300,7 +2301,8 @@ extern int _pcre2_auto_possessify(PCRE2_UCHAR *, const compile_block *);
 extern int _pcre2_check_escape(PCRE2_SPTR *, PCRE2_SPTR, uint32_t *, int *, uint32_t, uint32_t,
                                uint32_t, BOOL, compile_block *);
 extern BOOL _pcre2_ckd_smul(PCRE2_SIZE *, int, int);
-extern PCRE2_SPTR _pcre2_extuni(uint32_t, PCRE2_SPTR, PCRE2_SPTR, PCRE2_SPTR, BOOL, int *);
+extern PCRE2_SPTR _pcre2_extuni(uint32_t, PCRE2_SPTR, PCRE2_SPTR, PCRE2_SPTR, BOOL, int *,
+                                ri_scan_cache *);
 extern PCRE2_SPTR _pcre2_find_bracket(PCRE2_SPTR, BOOL, int);
 extern BOOL _pcre2_is_newline(PCRE2_SPTR, uint32_t, PCRE2_SPTR, uint32_t *, BOOL);
 extern void _pcre2_jit_free_rodata(void *, void *);

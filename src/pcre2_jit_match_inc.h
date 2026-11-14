@@ -146,6 +146,7 @@ pcre2_jit_match(const pcre2_code *code, PCRE2_SPTR subject, PCRE2_SIZE length,
   arguments.startchar_ptr = subject;
   arguments.mark_ptr = NULL;
   arguments.options = options;
+  arguments.ri_cache.valid = FALSE;
 
   if (mcontext != NULL)
   {

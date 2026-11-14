@@ -1610,16 +1610,33 @@ do_extuni_utf(jit_arguments *args, PCRE2_SPTR cc)
       bptr = prevcc;
 
       /* bptr is pointing to the left-hand character */
-      while (bptr > start_subject)
+      if (args->ri_cache.valid && args->ri_cache.left == prevcc)
       {
-        bptr--;
-        BACKCHAR(bptr);
-        GETCHAR(c, bptr);
+        ricount = args->ri_cache.count;
+      }
+      else
+      {
+        while (bptr > start_subject)
+        {
+          bptr--;
+          BACKCHAR(bptr);
+          GETCHAR(c, bptr);
 
-        if (UCD_GRAPHBREAK(c) != ucp_gbRegional_Indicator)
-          break;
+          if (UCD_GRAPHBREAK(c) != ucp_gbRegional_Indicator)
+            break;
 
-        ricount++;
+          ricount++;
+
+          if (args->ri_cache.valid && bptr == args->ri_cache.left)
+          {
+            ricount += args->ri_cache.count;
+            break;
+          }
+        }
+
+        args->ri_cache.left = prevcc;
+        args->ri_cache.count = ricount;
+        args->ri_cache.valid = TRUE;
       }
 
       if ((ricount & 1) != 0)
@@ -1694,14 +1711,31 @@ do_extuni_utf_invalid(jit_arguments *args, PCRE2_SPTR cc)
       bptr = prevcc;
 
       /* bptr is pointing to the left-hand character */
-      while (bptr > start_subject)
+      if (args->ri_cache.valid && args->ri_cache.left == prevcc)
       {
-        GETCHARBACK_INVALID(c, bptr, start_subject, break);
+        ricount = args->ri_cache.count;
+      }
+      else
+      {
+        while (bptr > start_subject)
+        {
+          GETCHARBACK_INVALID(c, bptr, start_subject, break);
 
-        if (UCD_GRAPHBREAK(c) != ucp_gbRegional_Indicator)
-          break;
+          if (UCD_GRAPHBREAK(c) != ucp_gbRegional_Indicator)
+            break;
 
-        ricount++;
+          ricount++;
+
+          if (args->ri_cache.valid && bptr == args->ri_cache.left)
+          {
+            ricount += args->ri_cache.count;
+            break;
+          }
+        }
+
+        args->ri_cache.left = prevcc;
+        args->ri_cache.count = ricount;
+        args->ri_cache.valid = TRUE;
       }
 
       if ((ricount & 1) != 0)
@@ -1777,19 +1811,36 @@ do_extuni_no_utf(jit_arguments *args, PCRE2_SPTR cc)
       bptr = cc - 1;
 
       /* bptr is pointing to the left-hand character */
-      while (bptr > start_subject)
+      if (args->ri_cache.valid && args->ri_cache.left == cc - 1)
       {
-        bptr--;
-        c = *bptr;
+        ricount = args->ri_cache.count;
+      }
+      else
+      {
+        while (bptr > start_subject)
+        {
+          bptr--;
+          c = *bptr;
 #if PCRE2_CODE_UNIT_WIDTH == 32
-        if (c >= 0x110000)
-          break;
+          if (c >= 0x110000)
+            break;
 #endif /* PCRE2_CODE_UNIT_WIDTH == 32 */
 
-        if (UCD_GRAPHBREAK(c) != ucp_gbRegional_Indicator)
-          break;
+          if (UCD_GRAPHBREAK(c) != ucp_gbRegional_Indicator)
+            break;
 
-        ricount++;
+          ricount++;
+
+          if (args->ri_cache.valid && bptr == args->ri_cache.left)
+          {
+            ricount += args->ri_cache.count;
+            break;
+          }
+        }
+
+        args->ri_cache.left = cc - 1;
+        args->ri_cache.count = ricount;
+        args->ri_cache.valid = TRUE;
       }
 
       if ((ricount & 1) != 0)

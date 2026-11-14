@@ -194,6 +194,7 @@ typedef struct jit_arguments {
   sljit_u32 limit_match;
   sljit_u32 oveccount;
   sljit_u32 options;
+  ri_scan_cache ri_cache;
 } jit_arguments;
 
 #define JIT_NUMBER_OF_COMPILE_MODES 3

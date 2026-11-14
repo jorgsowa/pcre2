@@ -1077,6 +1077,14 @@ typedef struct heapframe_align {
 
 #define HEAPFRAME_ALIGNMENT offsetof(heapframe_align, frame)
 
+/* RIs immediately preceding "left"; fixed per subject, so valid for a whole match. */
+
+typedef struct ri_scan_cache {
+  PCRE2_SPTR left;
+  int count;
+  BOOL valid;
+} ri_scan_cache;
+
 /* Structure for passing "static" information around between the functions
 doing traditional NFA matching (pcre2_match() and friends). */
 
@@ -1154,6 +1162,7 @@ typedef struct dfa_match_block {
   void *callout_data;                            // To pass back to callouts
   int (*callout)(pcre2_callout_block *, void *); // Callout function or NULL
   dfa_recursion_info *recursive;                 // Linked list of pattern recursion data
+  ri_scan_cache ri_cache;                        // Regional Indicator back-scan cache for \X
 } dfa_match_block;
 
 #endif /* PCRE2_PCRE2TEST */

@@ -2740,6 +2740,41 @@
     A
     z
 
+# Regional Indicators pair up from the start of each run of them, so matching
+# \X depends on how many precede the current one. Check repeats, starts inside
+# a run, and long runs, which must not take quadratic time.
+
+/\X\X\X/utf
+    \x{1f1e6}\x{1f1e7}\x{1f1e8}\x{1f1e9}\x{1f1ea}
+    A\x{1f1e6}\x{1f1e7}\x{1f1e8}B\x{1f1e9}\x{1f1ea}\x{1f1eb}
+
+/(?<=\x{1f1e6})\X\X/utf
+    \x{1f1e6}\x{1f1e7}\x{1f1e8}\x{1f1e9}\x{1f1ea}
+
+/(?<=\x{1f1e6}\x{1f1e7})\X\X/utf
+    \x{1f1e6}\x{1f1e7}\x{1f1e8}\x{1f1e9}\x{1f1ea}
+
+/^\x{1f1e6}\x{1f1e7}\x{1f1e8}\X\X\X/utf
+\= Expect no match
+    \x{1f1e6}\x{1f1e7}\x{1f1e8}\x{1f1e9}\x{1f1ea}
+
+/^\X+\X$/utf
+    \x{1f1e6}\x{1f1e7}\x{1f1e8}\x{1f1e9}\x{1f1ea}
+    \x{1f1e6}\x{1f1e7}\x{1f1e8}\x{1f1e9}\x{1f1ea}\x{1f1eb}
+
+/\X/g,utf
+    \x{1f1e6}\x{1f1e7}\x{1f1e8}\x{1f1e9}\x{1f1ea}
+
+/^(?=\X{50000}$)/utf
+    \[\x{1f1e6}]{100000}
+
+/^(?=\X{50001})/utf
+\= Expect no match
+    \[\x{1f1e6}]{100000}
+
+/^(?=\X+$)/utf
+    \[\x{1f1e6}]{100000}
+
 # -------------------------------------------------------------------------- 
 
 # End of testinput7

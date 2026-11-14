@@ -1717,7 +1717,8 @@ internal_dfa_match(dfa_match_block *mb, PCRE2_SPTR this_start_code, PCRE2_SPTR c
             next_active_state--;
           }
 
-          (void)PRIV(extuni)(c, ptr + clen, mb->start_subject, end_subject, utf, &ncount);
+          (void)PRIV(extuni)(c, ptr + clen, mb->start_subject, end_subject, utf, &ncount,
+                             &mb->ri_cache);
           count++;
           ADD_NEW_DATA(-state_offset, count, ncount);
         }
@@ -2018,7 +2019,8 @@ internal_dfa_match(dfa_match_block *mb, PCRE2_SPTR this_start_code, PCRE2_SPTR c
             next_active_state--;
           }
 
-          (void)PRIV(extuni)(c, ptr + clen, mb->start_subject, end_subject, utf, &ncount);
+          (void)PRIV(extuni)(c, ptr + clen, mb->start_subject, end_subject, utf, &ncount,
+                             &mb->ri_cache);
           ADD_NEW_DATA(-(state_offset + count), 0, ncount);
         }
 
@@ -2330,7 +2332,8 @@ internal_dfa_match(dfa_match_block *mb, PCRE2_SPTR this_start_code, PCRE2_SPTR c
             next_active_state--;
           }
 
-          nptr = PRIV(extuni)(c, ptr + clen, mb->start_subject, end_subject, utf, &ncount);
+          nptr = PRIV(extuni)(c, ptr + clen, mb->start_subject, end_subject, utf, &ncount,
+                              &mb->ri_cache);
           if (nptr >= end_subject && (mb->moptions & PCRE2_PARTIAL_HARD) != 0)
             reset_could_continue = TRUE;
           if (++count >= (int)GET2(code, 1))
@@ -2558,8 +2561,8 @@ internal_dfa_match(dfa_match_block *mb, PCRE2_SPTR this_start_code, PCRE2_SPTR c
         if (clen > 0)
         {
           int ncount = 0;
-          PCRE2_SPTR nptr =
-              PRIV(extuni)(c, ptr + clen, mb->start_subject, end_subject, utf, &ncount);
+          PCRE2_SPTR nptr = PRIV(extuni)(c, ptr + clen, mb->start_subject, end_subject, utf,
+                                         &ncount, &mb->ri_cache);
           if (nptr >= end_subject && (mb->moptions & PCRE2_PARTIAL_HARD) != 0)
             reset_could_continue = TRUE;
           ADD_NEW_DATA(-(state_offset + 1), 0, ncount);
@@ -3958,6 +3961,7 @@ pcre2_dfa_match(const pcre2_code *code, PCRE2_SPTR subject, PCRE2_SIZE length,
   mb->start_subject = subject;
   mb->end_subject = end_subject;
   mb->start_offset = start_offset;
+  mb->ri_cache.valid = FALSE;
   mb->allowemptypartial = (re->max_lookbehind > 0) || (re->flags & PCRE2_MATCH_EMPTY) != 0;
   mb->moptions = options;
   mb->poptions = re->overall_options;

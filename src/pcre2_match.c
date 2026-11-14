@@ -736,7 +736,8 @@ match(PCRE2_SPTR start_eptr, PCRE2_SPTR start_ecode, uint16_t top_bracket, PCRE2
 
   int rrc; // Return from functions & backtracking "recursions"
 #ifdef SUPPORT_UNICODE
-  int proptype; // Type of character property
+  int proptype;                                // Type of character property
+  ri_scan_cache ri_cache = { NULL, 0, FALSE }; // Shared RI back-scan cache for \X
 #endif
 
   uint32_t i;                // Used for local loops
@@ -3216,7 +3217,7 @@ NEW_FRAME:
       else
       {
         GETCHARINCTEST(fc, Feptr);
-        Feptr = PRIV(extuni)(fc, Feptr, mb->check_subject, mb->end_subject, utf, NULL);
+        Feptr = PRIV(extuni)(fc, Feptr, mb->check_subject, mb->end_subject, utf, NULL, &ri_cache);
       }
 
       CHECK_PARTIAL();
@@ -3595,7 +3596,8 @@ NEW_FRAME:
             else
             {
               GETCHARINCTEST(fc, Feptr);
-              Feptr = PRIV(extuni)(fc, Feptr, mb->check_subject, mb->end_subject, utf, NULL);
+              Feptr =
+                  PRIV(extuni)(fc, Feptr, mb->check_subject, mb->end_subject, utf, NULL, &ri_cache);
             }
 
             CHECK_PARTIAL();
@@ -4548,7 +4550,8 @@ NEW_FRAME:
             else
             {
               GETCHARINCTEST(fc, Feptr);
-              Feptr = PRIV(extuni)(fc, Feptr, mb->check_subject, mb->end_subject, utf, NULL);
+              Feptr =
+                  PRIV(extuni)(fc, Feptr, mb->check_subject, mb->end_subject, utf, NULL, &ri_cache);
             }
 
             CHECK_PARTIAL();
@@ -5212,7 +5215,8 @@ NEW_FRAME:
             else
             {
               GETCHARINCTEST(fc, Feptr);
-              Feptr = PRIV(extuni)(fc, Feptr, mb->check_subject, mb->end_subject, utf, NULL);
+              Feptr =
+                  PRIV(extuni)(fc, Feptr, mb->check_subject, mb->end_subject, utf, NULL, &ri_cache);
             }
 
             CHECK_PARTIAL();

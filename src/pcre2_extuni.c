@@ -55,7 +55,7 @@ support, because some compilers do not like functionless source files. */
 #ifndef SUPPORT_UNICODE
 PCRE2_SPTR
 PRIV(extuni)(uint32_t c, PCRE2_SPTR eptr, PCRE2_SPTR check_subject, PCRE2_SPTR end_subject,
-             BOOL utf, int *xcount)
+             BOOL utf, int *xcount, ri_scan_cache *ricache)
 {
   (void)c;
   (void)eptr;
@@ -63,6 +63,7 @@ PRIV(extuni)(uint32_t c, PCRE2_SPTR eptr, PCRE2_SPTR check_subject, PCRE2_SPTR e
   (void)end_subject;
   (void)utf;
   (void)xcount;
+  (void)ricache;
   return NULL;
 }
 #else
@@ -85,13 +86,15 @@ Arguments:
   utf            TRUE if in UTF mode
   xcount         pointer to count of additional characters,
                    or NULL if count not needed
+  ricache        cache for the Regional Indicator back-scan,
+                   or NULL to disable caching
 
 Returns:         pointer after the end of the sequence
 */
 
 PCRE2_SPTR
 PRIV(extuni)(uint32_t c, PCRE2_SPTR eptr, PCRE2_SPTR check_subject, PCRE2_SPTR end_subject,
-             BOOL utf, int *xcount)
+             BOOL utf, int *xcount, ri_scan_cache *ricache)
 {
   BOOL was_ep_ZWJ = FALSE;
   int lgb = UCD_GRAPHBREAK(c);
@@ -130,22 +133,45 @@ PRIV(extuni)(uint32_t c, PCRE2_SPTR eptr, PCRE2_SPTR check_subject, PCRE2_SPTR e
 
       /* bptr is pointing to the left-hand character */
 
-      while (bptr > check_subject)
+      PCRE2_SPTR lhs = bptr;
+
+      if (ricache != NULL && ricache->valid && ricache->left == lhs)
       {
-        bptr--;
-        if (utf)
+        ricount = ricache->count;
+      }
+      else
+      {
+        while (bptr > check_subject)
         {
-          BACKCHAR(bptr);
-          GETCHAR(c, bptr);
-        }
-        else
-        {
-          c = *bptr;
+          bptr--;
+          if (utf)
+          {
+            BACKCHAR(bptr);
+            GETCHAR(c, bptr);
+          }
+          else
+          {
+            c = *bptr;
+          }
+
+          if (UCD_GRAPHBREAK(c) != ucp_gbRegional_Indicator)
+            break;
+          ricount++;
+
+          // The rest of the run was counted by an earlier scan
+          if (ricache != NULL && ricache->valid && bptr == ricache->left)
+          {
+            ricount += ricache->count;
+            break;
+          }
         }
 
-        if (UCD_GRAPHBREAK(c) != ucp_gbRegional_Indicator)
-          break;
-        ricount++;
+        if (ricache != NULL)
+        {
+          ricache->left = lhs;
+          ricache->count = ricount;
+          ricache->valid = TRUE;
+        }
       }
 
       if ((ricount & 1) != 0)
