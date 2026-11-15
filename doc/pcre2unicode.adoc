@@ -301,7 +301,8 @@ lookbehind assertions in the pattern, the check starts at the starting offset.
 Otherwise, it starts at the length of the longest lookbehind before the
 starting offset, or at the start of the subject if there are not that many
 characters before the starting offset. Note that the sequences [.regex]`\b` and [.regex]`\B` are
-one-character lookbehinds.
+one-character lookbehinds, as is [.regex]`^` in multiline mode when the newline
+convention is const:PCRE2_NEWLINE_ANY or const:PCRE2_NEWLINE_ANYCRLF.
 
 In addition to checking the format of the string, there is a check to ensure
 that all code points lie in the range char:U+0 to char:U+10FFFF, excluding the surrogate

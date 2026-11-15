@@ -170,6 +170,24 @@ Failed: error 134 at offset 12: character code point value in \x{} or \o{} is to
 ** Truncation will probably give the wrong result.
 No match
 
+# Multiline ^ with ANY newlines inspects the character before the start offset,
+# so that character is UTF-checked.
+
+/^a/m,newline=any,utf
+    x\na\=offset=2
+ 0: a
+    x\r\na\=offset=3
+ 0: a
+\= Expect UTF error
+    \n\x80a\=offset=2
+Failed: error -22: UTF-8 error: isolated byte with 0x80 bit set at offset 1
+    \n\x{dc00}a\=offset=2
+Error -36 (bad UTF-8 offset)
+
+/^a/m,newline=crlf,utf
+    x\r\na\=offset=3
+ 0: a
+
 # ---------------------------------------------------- 
 
 # End of testinput14

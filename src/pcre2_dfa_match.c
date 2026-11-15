@@ -78,6 +78,7 @@ in others, so I abandoned this code. */
 
 #define NLBLOCK mb            /* Block containing newline information */
 #define PSSTART start_subject /* Field containing processed string start */
+#define PSCHECK check_subject /* Field containing UTF-checked string start */
 #define PSEND   end_subject   /* Field containing processed string end */
 
 #define PUBLIC_DFA_MATCH_OPTIONS                                                           \
@@ -3956,6 +3957,7 @@ pcre2_dfa_match(const pcre2_code *code, PCRE2_SPTR subject, PCRE2_SIZE length,
   mb->start_code = (PCRE2_SPTR)((const uint8_t *)re + re->code_start);
   mb->tables = re->tables;
   mb->start_subject = subject;
+  mb->check_subject = subject;
   mb->end_subject = end_subject;
   mb->start_offset = start_offset;
   mb->allowemptypartial = (re->max_lookbehind > 0) || (re->flags & PCRE2_MATCH_EMPTY) != 0;
@@ -4058,6 +4060,7 @@ pcre2_dfa_match(const pcre2_code *code, PCRE2_SPTR subject, PCRE2_SIZE length,
       match_data->startchar += (PCRE2_SIZE)(check_subject - subject);
       goto EXIT;
     }
+    mb->check_subject = check_subject;
   }
 #endif /* SUPPORT_UNICODE */
 
@@ -4578,6 +4581,7 @@ EXIT:
 
 #undef NLBLOCK /* Block containing newline information */
 #undef PSSTART /* Field containing processed string start */
+#undef PSCHECK /* Field containing UTF-checked string start */
 #undef PSEND   /* Field containing processed string end */
 
 /* End of pcre2_dfa_match.c */

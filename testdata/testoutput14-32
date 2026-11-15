@@ -154,6 +154,24 @@ No match
     Kk\x{ffffffff}\x{ffffffff}\x{ffffffff}Z
 No match
 
+# Multiline ^ with ANY newlines inspects the character before the start offset,
+# so that character is UTF-checked.
+
+/^a/m,newline=any,utf
+    x\na\=offset=2
+ 0: a
+    x\r\na\=offset=3
+ 0: a
+\= Expect UTF error
+    \n\x80a\=offset=2
+No match
+    \n\x{dc00}a\=offset=2
+Failed: error -27: UTF-32 error: code points 0xd800-0xdfff are not defined at offset 1
+
+/^a/m,newline=crlf,utf
+    x\r\na\=offset=3
+ 0: a
+
 # ---------------------------------------------------- 
 
 # End of testinput14

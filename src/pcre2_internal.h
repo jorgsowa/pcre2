@@ -433,7 +433,8 @@ PCRE (both APIs) for a long time. */
 "any" and "anycrlf" at present). The following macros are used to package up
 testing for newlines. NLBLOCK, PSSTART, and PSEND are defined in the various
 modules to indicate in which datablock the parameters exist, and what the
-start/end of string field names are. */
+start/end of string field names are. WAS_NEWLINE also needs PSCHECK, the start
+of the UTF-checked part, because was_newline() decodes backwards. */
 
 #define NLTYPE_FIXED   0 /* Newline is a fixed length string */
 #define NLTYPE_ANY     1 /* Newline is any Unicode line ending */
@@ -452,8 +453,8 @@ start/end of string field names are. */
 
 #define WAS_NEWLINE(p)                                                                           \
   ((NLBLOCK->nltype != NLTYPE_FIXED)                                                             \
-       ? ((p) > NLBLOCK->PSSTART &&                                                              \
-          PRIV(was_newline)((p), NLBLOCK->nltype, NLBLOCK->PSSTART, &(NLBLOCK->nllen), utf))     \
+       ? ((p) > NLBLOCK->PSCHECK &&                                                              \
+          PRIV(was_newline)((p), NLBLOCK->nltype, NLBLOCK->PSCHECK, &(NLBLOCK->nllen), utf))     \
        : ((p) >= NLBLOCK->PSSTART + NLBLOCK->nllen && *(p - NLBLOCK->nllen) == NLBLOCK->nl[0] && \
           (NLBLOCK->nllen == 1 || *(p - NLBLOCK->nllen + 1) == NLBLOCK->nl[1])))
 

@@ -8633,4 +8633,13 @@ a)"xI
 /A\KBC/auto_callout
     _ABC_
 
+# Multiline ^ registers a one-character lookbehind when the newline type is not
+# fixed, because it decodes the preceding character.
+
+/^a/Im,newline=any
+
+/^a/Im,newline=anycrlf
+
+/^a/Im,newline=crlf
+
 # End of testinput2

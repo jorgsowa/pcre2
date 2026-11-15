@@ -62,6 +62,7 @@ information, and fields within it. */
 
 #define NLBLOCK mb            /* Block containing newline information */
 #define PSSTART start_subject /* Field containing processed string start */
+#define PSCHECK check_subject /* Field containing UTF-checked string start */
 #define PSEND   end_subject   /* Field containing processed string end */
 
 #define RECURSE_UNSET 0xffffffffu /* Bigger than max group number */
@@ -9053,6 +9054,7 @@ ENDLOOP:
 
 #undef NLBLOCK /* Block containing newline information */
 #undef PSSTART /* Field containing processed string start */
+#undef PSCHECK /* Field containing UTF-checked string start */
 #undef PSEND   /* Field containing processed string end */
 
 /* End of pcre2_match.c */

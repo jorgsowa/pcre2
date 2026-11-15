@@ -24247,6 +24247,35 @@ Callout (7): "after"
  +5   ^ ^     End of pattern
  0: BC
 
+# Multiline ^ registers a one-character lookbehind when the newline type is not
+# fixed, because it decodes the preceding character.
+
+/^a/Im,newline=any
+Capture group count = 0
+Max lookbehind = 1
+Options: multiline
+Forced newline is any Unicode newline
+First code unit at start or follows newline
+Last code unit = 'a'
+Subject length lower bound = 1
+
+/^a/Im,newline=anycrlf
+Capture group count = 0
+Max lookbehind = 1
+Options: multiline
+Forced newline is CR, LF, or CRLF
+First code unit at start or follows newline
+Last code unit = 'a'
+Subject length lower bound = 1
+
+/^a/Im,newline=crlf
+Capture group count = 0
+Options: multiline
+Forced newline is CRLF
+First code unit at start or follows newline
+Last code unit = 'a'
+Subject length lower bound = 1
+
 # End of testinput2
 Error -80: PCRE2_ERROR_BADDATA (unknown error number)
 Error -62: bad serialized data

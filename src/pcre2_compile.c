@@ -6710,6 +6710,9 @@ compile_branch(uint32_t *optionsptr, uint32_t *xoptionsptr, PCRE2_UCHAR **codept
       {
         if (firstcuflags == REQ_UNSET)
           zerofirstcuflags = firstcuflags = REQ_NONE;
+        /* was_newline() decodes the previous character, so it must be UTF-checked. */
+        if (cb->nltype != NLTYPE_FIXED && cb->max_lookbehind == 0)
+          cb->max_lookbehind = 1;
         *code++ = OP_CIRCM;
       }
       else

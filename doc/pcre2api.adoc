@@ -2679,7 +2679,9 @@ largest of these backward moves. The third argument should point to a type:uint3
 integer. The simple assertions [.regex]`\b` and [.regex]`\B` require a one-character lookbehind
 and cause const:PCRE2_INFO_MAXLOOKBEHIND to return 1 in the absence of anything
 longer. [.regex]`\A` also registers a one-character lookbehind, though it does not
-actually inspect the previous character.
+actually inspect the previous character. In multiline mode, [.regex]`^` registers a
+one-character lookbehind when the newline convention is const:PCRE2_NEWLINE_ANY or
+const:PCRE2_NEWLINE_ANYCRLF.
 
 +
 Note that this information is useful for multi-segment matching only
